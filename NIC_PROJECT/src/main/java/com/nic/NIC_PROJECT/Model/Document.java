@@ -10,7 +10,7 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@org.springframework.data.mongodb.core.mapping.Document(collection = "documents")
+@org.springframework.data.mongodb.core.mapping.Document(collection = "client")
 public class Document {
 
 
@@ -70,9 +70,7 @@ public class Document {
     @Setter
     private String nodal_officer_designation;
 
-    @Getter
-    @Setter
-    private String content;
+
 
 
 }

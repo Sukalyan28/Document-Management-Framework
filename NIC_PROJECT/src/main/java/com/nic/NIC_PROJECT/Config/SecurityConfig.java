@@ -1,6 +1,6 @@
 package com.nic.NIC_PROJECT.Config;
 
-import com.nic.NIC_PROJECT.Config.JwtFilter;
+import com.nic.NIC_PROJECT.jwt.JwtFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

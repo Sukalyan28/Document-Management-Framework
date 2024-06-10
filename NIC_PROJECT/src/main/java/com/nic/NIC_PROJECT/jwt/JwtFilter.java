@@ -1,6 +1,5 @@
-package com.nic.NIC_PROJECT.Config;
+package com.nic.NIC_PROJECT.jwt;
 
-import com.nic.NIC_PROJECT.Service.jwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
