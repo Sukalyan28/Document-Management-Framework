@@ -48,6 +48,7 @@ public class DocumentController {
         if(documentOptional.isPresent()){
             review.setDocumentId(String.valueOf(documentOptional.get().getDocument_id()));
             Review savedReview = documentService.saveOrUpdateReview(review);
+            System.out.println("Reviewed successfully");
             return ResponseEntity.ok(savedReview);
         }else{
             return ResponseEntity.notFound().build();
