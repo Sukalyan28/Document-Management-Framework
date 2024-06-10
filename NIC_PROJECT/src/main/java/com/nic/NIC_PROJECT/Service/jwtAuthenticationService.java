@@ -21,7 +21,7 @@ public class AuthenticationService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final jwtService jwtService;
+    private final com.nic.NIC_PROJECT.jwt.jwtService jwtService;
     private final AuthenticationManager authenticationManager;
 
     public initResponse register(RegisterRequest request){
