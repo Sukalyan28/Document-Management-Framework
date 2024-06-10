@@ -2,7 +2,6 @@ package com.nic.NIC_PROJECT.Model;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.Date;
 import java.util.UUID;
@@ -11,8 +10,8 @@ import java.util.UUID;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "documents")
-public class DocumentModel {
+@org.springframework.data.mongodb.core.mapping.Document(collection = "documents")
+public class Document {
 
 
 
