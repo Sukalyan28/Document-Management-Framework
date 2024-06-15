@@ -1,12 +1,12 @@
 package com.nic.NIC_PROJECT.controller;
 import  java.lang.*;
 
-import com.nic.NIC_PROJECT.Payload.RegisterRequest;
+import com.nic.NIC_PROJECT.Payload.initRRequest;
 import com.nic.NIC_PROJECT.Service.AuthenticationService;
-import com.nic.NIC_PROJECT.Repository.UserRepository;
+import com.nic.NIC_PROJECT.Repository.ClientRepository;
 
 import com.nic.NIC_PROJECT.Payload.initResponse;
-import com.nic.NIC_PROJECT.Payload.initRequest;
+import com.nic.NIC_PROJECT.Payload.initLRequest;
 import com.nic.NIC_PROJECT.jwt.jwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class InitAuthController {
     private UserDetailsService userDetailsService;
 
     @Autowired
-    private final UserRepository userRepository;
+    private final ClientRepository clientRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -48,27 +48,30 @@ public class InitAuthController {
     @Autowired
     private jwtService jwtUtil;
 
+    //getters and setters of register request class is used here. UserDetails package not used
+
+
     @PostMapping("/init")
-    public ResponseEntity<initResponse> init(@RequestBody initRequest request) {
-        if (userRepository.findByUsername(request.getUsername()).isPresent()) {
+    public ResponseEntity<initResponse> init(@RequestBody initLRequest request) {
+        if (clientRepository.findByClientId(request.getClient_id()).isPresent()) {
             try {
                 initResponse response = service.authenticate(request);
-                response.setMessage("Logged in successfully");
-                System.out.println("Logged in successfully");
+                response.setMessage("Client Logged in successfully");
+                System.out.println("Client Logged in successfully");
                 return new ResponseEntity<>(response, HttpStatus.OK);
 
             } catch (Exception e) {
                 return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
             }
         } else {
-            RegisterRequest registerRequest = new RegisterRequest();
-            registerRequest.setUsername(request.getUsername());
-            registerRequest.setPassword(request.getPassword());
+            initRRequest initRRequest = new initRRequest();
+            initRRequest.setClient_id(request.getClient_id());
+            initRRequest.setClient_secret(request.getClient_secret());
 
             try {
-                initResponse response = service.register(registerRequest);
-                response.setMessage("New User created and logged in");
-                System.out.println("New User created and logged in: ");
+                initResponse response = service.register(initRRequest);
+                response.setMessage("New Client created and logged in");
+                System.out.println("New Client created and logged in: ");
                 return new ResponseEntity<>(response, HttpStatus.CREATED);
 
             } catch (Exception e) {

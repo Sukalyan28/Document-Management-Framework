@@ -3,7 +3,7 @@ package com.nic.NIC_PROJECT.Config;
 
 
 
-import com.nic.NIC_PROJECT.Repository.UserRepository;
+import com.nic.NIC_PROJECT.Repository.ClientRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,10 +20,10 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @RequiredArgsConstructor
 public class ApplicationConfig {
 
-    private final UserRepository userRepository;
+    private final ClientRepository clientRepository;
     @Bean
     public UserDetailsService userDetailsService(){
-        return username -> userRepository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException("Username not found"));
+        return client_id -> clientRepository.findByClientId(client_id).orElseThrow(()->new UsernameNotFoundException("Username not found"));
     }
 
     @Bean

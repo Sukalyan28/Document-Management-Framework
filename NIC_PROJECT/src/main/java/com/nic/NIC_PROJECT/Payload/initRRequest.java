@@ -6,11 +6,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterRequest {
-    private String username;
-    private String password;
+public class initRRequest {
+    private String client_id;
+    private String client_secret;
+    private Date created_on;
+    private Date expiry_on;
 }

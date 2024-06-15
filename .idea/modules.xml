@@ -2,7 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/NIC_PROJECT.iml" filepath="$PROJECT_DIR$/.idea/NIC_PROJECT.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/Document-Management-Framework.iml" filepath="$PROJECT_DIR$/.idea/Document-Management-Framework.iml" />
+      <module fileurl="file://$PROJECT_DIR$/NIC_PROJECT/NIC_PROJECT.iml" filepath="$PROJECT_DIR$/NIC_PROJECT/NIC_PROJECT.iml" />
     </modules>
   </component>
 </project>

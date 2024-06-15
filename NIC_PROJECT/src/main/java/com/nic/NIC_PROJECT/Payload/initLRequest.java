@@ -8,8 +8,7 @@ import lombok.*;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class initRequest {
-    private String username;
-//    private String email;
-    private String password;
+public class initLRequest {
+    private String client_id;
+    private String client_secret;
 }
