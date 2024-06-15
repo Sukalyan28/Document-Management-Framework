@@ -3,12 +3,12 @@ package com.nic.NIC_PROJECT.controller;
 import com.nic.NIC_PROJECT.Model.Document;
 import com.nic.NIC_PROJECT.Model.Review;
 import com.nic.NIC_PROJECT.Repository.DocumentRepository;
-import com.nic.NIC_PROJECT.Repository.ReviewRepository;
 import com.nic.NIC_PROJECT.Service.DocumentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,12 +35,17 @@ public class DocumentController {
         return ResponseEntity.ok(document.getBody());
     }
 
-    @GetMapping("/documentofaperson/{clientId}")
-    public ResponseEntity<?> getDocumentByClientId(@PathVariable String clientId) {
-        System.out.println("Received request for document with clientId: " + clientId);
-        return documentService.getDocumentByClientId(clientId);
-    }
+    @GetMapping("/documentofaperson/{person_id}")
+    public ResponseEntity<?> getDocumentByPersonId(@PathVariable int person_id) {
+        System.out.println("Received request for document with person ID: " + person_id);
+        List<Document> documents = documentService.getDocumentsByPersonId(person_id);
 
+        if (documents.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        } else {
+            return ResponseEntity.ok(documents);
+        }
+    }
     @PostMapping("/reviewdocument")
     public  ResponseEntity<Review> saveOrUpdateReview(@RequestBody Review review){
         Optional<Document> documentOptional = documentRepository.findById(UUID.fromString(review.getDocumentId()));

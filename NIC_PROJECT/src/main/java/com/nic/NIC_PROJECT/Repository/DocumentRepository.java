@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.UUID;
 
 public interface DocumentRepository extends MongoRepository<Document, UUID> {
-    @Query("{ 'client_id': ?0 }")
-    List<Document> findByClientId(String client_id);
+    @Query("{ 'created_for.person_id': ?0 }")
+    List<Document> findByPersonId(int person_id);
 }
