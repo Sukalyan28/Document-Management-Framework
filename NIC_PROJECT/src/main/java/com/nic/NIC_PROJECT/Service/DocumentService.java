@@ -1,16 +1,26 @@
 package com.nic.NIC_PROJECT.Service;
 
-import com.nic.NIC_PROJECT.Model.Document;
+import com.nic.NIC_PROJECT.Model.Archive;
+import com.nic.NIC_PROJECT.Model.CDocument;
 import com.nic.NIC_PROJECT.Model.Review;
+import com.nic.NIC_PROJECT.Repository.ArchiveRepository;
 import com.nic.NIC_PROJECT.Repository.DocumentRepository;
 import com.nic.NIC_PROJECT.Repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.http.HttpStatus;
+
+import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.PDPage;
+import org.apache.pdfbox.pdmodel.PDPageContentStream;
+import org.apache.pdfbox.pdmodel.font.PDType1Font;
+import org.apache.pdfbox.util.Matrix;
 
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -27,8 +37,10 @@ public class DocumentService {
         this.documentRepository = documentRepository;
         this.mongoTemplate = mongoTemplate;
     }
+    @Autowired
+    public ArchiveRepository archiveRepository;
 
-    public UUID saveDocument(Document document) {
+    public UUID saveDocument(CDocument document) {
         document.setDocument_id(UUID.randomUUID());
 
         Date date = new Date();
@@ -44,24 +56,25 @@ public class DocumentService {
         return document.getDocument_id();
     }
 
-    public ResponseEntity<Document> getDocumentById(UUID documentId) {
+    public ResponseEntity<CDocument> getDocumentById(UUID documentId) {
         System.out.println("searching for document id: " + documentId);
-        Document document = documentRepository.findById(documentId).orElse(null);
+        CDocument CDocument = documentRepository.findById(documentId).orElse(null);
 
-        System.out.println("Document found : " + document);
-        return ResponseEntity.ok(document);
+        System.out.println("Document found : " + CDocument);
+        return ResponseEntity.ok(CDocument);
 
     }
-    public List<Document> getDocumentsByPersonId(int personId) {
+    public List<CDocument> getDocumentsByPersonId(int personId) {
+        System.out.println("searching for document with personId: " + personId);
         return documentRepository.findByPersonId(personId);
     }
 
     public Review saveOrUpdateReview(Review review){
-        Optional<Review> existingReview = reviewRepository.findByDocumentId(review.getDocumentId());
+        Optional<Review> existingReview = reviewRepository.findByApplicationTransactionId(review.getApplicationTransactionId());
 
         if(existingReview.isPresent()){
             Review existing = existingReview.get();
-            existing.setFeedback(review.getFeedback());
+            existing.setReview(review.getReview());
 
             return reviewRepository.save(existing);
         }
@@ -69,17 +82,87 @@ public class DocumentService {
         return reviewRepository.save(review);
     }
 
-    public String deleteDocument(UUID documentId) {
-        Document document = documentRepository.findById(documentId)
-                .orElseThrow(() -> new RuntimeException("Document not found"));
+//    public String deleteDocument(UUID documentId) {
+//        Document document = documentRepository.findById(documentId)
+//                .orElseThrow(() -> new RuntimeException("Document not found"));
+//
+//        mongoTemplate.save(document, "archive_documents");
+//        LOGGER.info("Document archived successfully with ID: " + documentId);
+//
+//        documentRepository.deleteById(documentId);
+//        LOGGER.info("Document deleted successfully with ID: " + documentId);
+//
+//        return "Document archived successfully";
+//    }
+    public Archive archiveDocument(Archive archiveDocument) {
 
-        mongoTemplate.save(document, "archive_documents");
-        LOGGER.info("Document archived successfully with ID: " + documentId);
+        Optional<Archive> existingArchive = archiveRepository.findByApplicationTransactionId(archiveDocument.getApplicationTransactionId());
+        Optional<CDocument> archivedDocument = documentRepository.findByApplicationTransactionId(archiveDocument.getApplicationTransactionId());
 
-        documentRepository.deleteById(documentId);
-        LOGGER.info("Document deleted successfully with ID: " + documentId);
+        if (existingArchive.isPresent()) {
+            Archive archive = existingArchive.get();
+            archive.setArchival_comments(archiveDocument.getArchival_comments());
+            return archiveRepository.save(archive);
+        }
 
-        return "Document archived successfully";
+        archivedDocument.ifPresent(document -> documentRepository.deleteById(document.getDocument_id()));
+
+        return archiveRepository.save(archiveDocument);
+    }
+
+
+
+    public CDocument addWatermarkToDocument(long applicationTransactionId, String watermark) throws IOException {
+        Optional<CDocument> existingDocument = documentRepository.findByApplicationTransactionId(applicationTransactionId);
+
+        if (!existingDocument.isPresent()) {
+            throw new IOException("Document not found");
+        }
+
+       CDocument clientCDocument = existingDocument.get();
+
+        byte[] pdfBytes = Base64.getDecoder().decode(clientCDocument.getDocument().getActual_document_base_64());
+
+        PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfBytes));
+
+        //loop to add watermark to each page
+        for(PDPage page : document.getPages()){
+            PDPageContentStream contentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true, true);
+            contentStream.setFont(PDType1Font.HELVETICA_BOLD, 50);
+            contentStream.setNonStrokingColor(200, 200, 200);    //Light Grey colour
+            contentStream.beginText();
+            contentStream.setTextMatrix(Matrix.getRotateInstance(Math.toRadians(45), 200, 400));  // adjust the position and angle as required
+            contentStream.newLineAtOffset(100,300);
+            contentStream.showText(watermark);
+            contentStream.endText();
+            contentStream.close();
+        }
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        document.save(outputStream);
+        document.close();
+
+        String base64WatermarkedPdf = Base64.getEncoder().encodeToString(outputStream.toByteArray());
+
+        clientCDocument.getDocument().setActual_document_base_64(base64WatermarkedPdf);
+
+        documentRepository.deleteById(existingDocument.get().getDocument_id());
+        documentRepository.save(clientCDocument);
+
+        return clientCDocument;
+
+    }
+
+
+
+    public Optional<Review> getReviewByApplicationTransactionId(long applicationTransactionId) {
+        return reviewRepository.findByApplicationTransactionId(applicationTransactionId);
+    }
+
+
+
+    public Optional<Archive> getArchiveDocumentByApplicationTransactionId(long applicationTransactionId) {
+        return archiveRepository.findByApplicationTransactionId(applicationTransactionId);
     }
 
 

@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @org.springframework.data.mongodb.core.mapping.Document(collection = "document")
-public class Document {
+public class CDocument {
 
 
 

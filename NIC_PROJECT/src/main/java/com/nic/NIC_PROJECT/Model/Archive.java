@@ -1,19 +1,14 @@
 package com.nic.NIC_PROJECT.Model;
 
-
 import lombok.*;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "reviews")
-public class Review {
-    @Id
-    private String id;
+@AllArgsConstructor
+@Document(collection = "archive_documents")
+public class Archive {
     private long applicationTransactionId;
-    private String review;
-
+    private String archival_comments;
 }
