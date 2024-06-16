@@ -7,7 +7,7 @@ import com.nic.NIC_PROJECT.Model.CDocument;
 
 import java.util.Optional;
 
-public interface ArchiveRepository extends MongoRepository<CDocument, Long> {
+public interface ArchiveRepository extends MongoRepository<Archive, Long> {
     @Query("{'applicationTransactionId' :  ?0 }")
     Optional<Archive> findByApplicationTransactionId(Long applicationTransactionId);
 }

@@ -2,10 +2,13 @@ package com.nic.NIC_PROJECT.Service;
 
 import com.nic.NIC_PROJECT.Model.Archive;
 import com.nic.NIC_PROJECT.Model.CDocument;
+import com.nic.NIC_PROJECT.Model.PdfPasswordRequest;
 import com.nic.NIC_PROJECT.Model.Review;
 import com.nic.NIC_PROJECT.Repository.ArchiveRepository;
 import com.nic.NIC_PROJECT.Repository.DocumentRepository;
 import com.nic.NIC_PROJECT.Repository.ReviewRepository;
+import org.apache.pdfbox.pdmodel.encryption.AccessPermission;
+import org.apache.pdfbox.pdmodel.encryption.StandardProtectionPolicy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
@@ -215,5 +218,59 @@ public class DocumentService {
 //    }
 
 
+    public void deleteDocumentById(UUID documentId) {
+        documentRepository.deleteById(documentId);
+    }
+    public CDocument updateDocument(CDocument document) {
+        Date date = new Date();
+        document.setCreated_on(date);
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.YEAR, 1);
+        Date expiryDate = calendar.getTime();
+        document.setExpiry_on(expiryDate);
+
+        return documentRepository.save(document);
+    }
+
+
+    public String addPasswordToPdf(PdfPasswordRequest request) throws IOException {
+        Optional<CDocument> existingDocument = documentRepository.findByApplicationTransactionId(request.getApplicationTransactionId());
+
+        if (!existingDocument.isPresent()) {
+            throw new IOException("Document not found");
+        }
+
+        CDocument clientDocument = existingDocument.get();
+
+        byte[] pdfBytes = Base64.getDecoder().decode(clientDocument.getDocument().getActual_document_base_64());
+
+        PDDocument document = PDDocument.load(new ByteArrayInputStream(pdfBytes));
+
+        // Set the password protection
+        AccessPermission accessPermission = new AccessPermission();
+        StandardProtectionPolicy protectionPolicy = new StandardProtectionPolicy(
+                request.getPassword(), request.getPassword(), accessPermission);
+
+        // Customize the protection policy if necessary
+        protectionPolicy.setEncryptionKeyLength(128);  // 128-bit key length
+        protectionPolicy.setPermissions(accessPermission);
+        document.protect(protectionPolicy);
+
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        document.save(outputStream);
+        document.close();
+
+        String base64PdfWithPassword = Base64.getEncoder().encodeToString(outputStream.toByteArray());
+
+        // Update the ClientDocument with the new Base64 content
+        clientDocument.getDocument().setActual_document_base_64(base64PdfWithPassword);
+
+        // Save the updated ClientDocument
+        documentRepository.save(clientDocument);
+
+        return base64PdfWithPassword;
+    }
 
 }

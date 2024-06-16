@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.nic.NIC_PROJECT.Model.Watermark;
-
+import com.nic.NIC_PROJECT.Model.PdfPasswordRequest;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -118,6 +118,31 @@ public class DocumentController {
             return ResponseEntity.notFound().build();
         }
 
-}
+    }
+    @PostMapping("/editdocumentinfo/{documentId}")
+    public ResponseEntity<?> editDocumentInfo(@PathVariable UUID documentId, @RequestBody CDocument newDocument) {
+        ResponseEntity<CDocument> responseEntity = documentService.getDocumentById(documentId);
+
+        if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
+            documentService.deleteDocumentById(documentId);
+
+            newDocument.setDocument_id(documentId);
+            CDocument savedDocument = documentService.updateDocument(newDocument);
+
+            return ResponseEntity.ok(savedDocument);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PostMapping("/setadocumentconfidential")
+    public ResponseEntity<?> addPasswordToPdf(@RequestBody PdfPasswordRequest request) {
+        try {
+            String base64PdfWithPassword = documentService.addPasswordToPdf(request);
+            return ResponseEntity.ok(base64PdfWithPassword);
+        } catch (IOException e) {
+            return ResponseEntity.status(500).body("Failed to add password to PDF: " + e.getMessage());
+        }
+    }
 
 }
