@@ -35,7 +35,7 @@ public class AuthenticationService {
         Date expiryDate = calender.getTime();
 
         var client = Client.builder()
-                .clientId(request.getClient_id())
+                .client_id(request.getClient_id())
                 .client_secret(passwordEncoder.encode(request.getClient_secret()))
                 .created_on(date)
                 .expiry_on(expiryDate)
