@@ -5,6 +5,6 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Watermark {
-    private long applicationTransactionId;
+    private long application_transaction_id;
     private String watermark;
 }

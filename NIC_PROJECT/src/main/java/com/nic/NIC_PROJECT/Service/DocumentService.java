@@ -73,7 +73,7 @@ public class DocumentService {
     }
 
     public Review saveOrUpdateReview(Review review){
-        Optional<Review> existingReview = reviewRepository.findByApplicationTransactionId(review.getApplicationTransactionId());
+        Optional<Review> existingReview = reviewRepository.findByApplicationTransactionId(review.getApplication_transaction_id());
 
         if(existingReview.isPresent()){
             Review existing = existingReview.get();
@@ -99,8 +99,8 @@ public class DocumentService {
 //    }
     public Archive archiveDocument(Archive archiveDocument) {
 
-        Optional<Archive> existingArchive = archiveRepository.findByApplicationTransactionId(archiveDocument.getApplicationTransactionId());
-        Optional<CDocument> archivedDocument = documentRepository.findByApplicationTransactionId(archiveDocument.getApplicationTransactionId());
+        Optional<Archive> existingArchive = archiveRepository.findByApplicationTransactionId(archiveDocument.getApplication_transaction_id());
+        Optional<CDocument> archivedDocument = documentRepository.findByApplicationTransactionId(archiveDocument.getApplication_transaction_id());
 
         if (existingArchive.isPresent()) {
             Archive archive = existingArchive.get();
@@ -236,7 +236,7 @@ public class DocumentService {
 
 
     public String addPasswordToPdf(PdfPasswordRequest request) throws IOException {
-        Optional<CDocument> existingDocument = documentRepository.findByApplicationTransactionId(request.getApplicationTransactionId());
+        Optional<CDocument> existingDocument = documentRepository.findByApplicationTransactionId(request.getApplication_transaction_id());
 
         if (!existingDocument.isPresent()) {
             throw new IOException("Document not found");

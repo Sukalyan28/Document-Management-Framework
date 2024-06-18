@@ -14,6 +14,6 @@ public interface DocumentRepository extends MongoRepository<CDocument, UUID> {
     List<CDocument> findByPersonId(int person_id);
 
     @Query("{'file_information.application_transaction_id' :  ?0}")
-    Optional<CDocument> findByApplicationTransactionId(long applicationId);
+    Optional<CDocument> findByApplicationTransactionId(long application_transaction_id);
 
 }

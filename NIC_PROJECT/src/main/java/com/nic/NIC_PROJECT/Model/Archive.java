@@ -9,6 +9,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @AllArgsConstructor
 @Document(collection = "archive_documents")
 public class Archive {
-    private long applicationTransactionId;
+    private long application_transaction_id;
     private String archival_comments;
 }

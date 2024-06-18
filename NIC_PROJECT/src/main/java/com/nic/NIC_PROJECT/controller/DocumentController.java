@@ -57,10 +57,10 @@ public class DocumentController {
     }
     @PostMapping("/reviewdocument")
     public  ResponseEntity<Review> saveOrUpdateReview(@RequestBody Review review){
-        Optional<CDocument> documentOptional = documentRepository.findByApplicationTransactionId(review.getApplicationTransactionId());
+        Optional<CDocument> documentOptional = documentRepository.findByApplicationTransactionId(review.getApplication_transaction_id());
 
         if(documentOptional.isPresent()){
-            review.setApplicationTransactionId(documentOptional.get().getFile_information().getApplication_transaction_id());
+            review.setApplication_transaction_id(documentOptional.get().getFile_information().getApplication_transaction_id());
             Review savedReview = documentService.saveOrUpdateReview(review);
 
             return ResponseEntity.ok(savedReview);
@@ -70,7 +70,7 @@ public class DocumentController {
     }
     @PostMapping("/archivedocument")
     public ResponseEntity<?> archiveDocument(@RequestBody Archive archiveDocument) {
-        Optional<CDocument> clientDocumentOptional = documentRepository.findByApplicationTransactionId(archiveDocument.getApplicationTransactionId());
+        Optional<CDocument> clientDocumentOptional = documentRepository.findByApplicationTransactionId(archiveDocument.getApplication_transaction_id());
 
         if (clientDocumentOptional.isPresent()) {
             Archive savedArchiveDocument = documentService.archiveDocument(archiveDocument);
@@ -90,7 +90,7 @@ public class DocumentController {
     @PostMapping("/addwatermarktodocument")
     public ResponseEntity<?> addWatermarkToDocument(@RequestBody Watermark watermarkRequest){
         try {
-            CDocument updatedCDocument = documentService.addWatermarkToDocument(watermarkRequest.getApplicationTransactionId(),
+            CDocument updatedCDocument = documentService.addWatermarkToDocument(watermarkRequest.getApplication_transaction_id(),
                     watermarkRequest.getWatermark());
             return new ResponseEntity<>(updatedCDocument, HttpStatus.OK);
         } catch (IOException e) {
@@ -99,9 +99,9 @@ public class DocumentController {
         }
     }
 
-    @GetMapping("/viewreviewlog/{applicationTransactionId}")
-    public ResponseEntity<Review> getReviewByApplicationId(@PathVariable long applicationTransactionId) {
-        Optional<Review> reviewOptional = documentService.getReviewByApplicationTransactionId(applicationTransactionId);
+    @GetMapping("/viewreviewlog/{application_transaction_id}")
+    public ResponseEntity<Review> getReviewByApplicationId(@PathVariable long application_transaction_id) {
+        Optional<Review> reviewOptional = documentService.getReviewByApplicationTransactionId(application_transaction_id);
 
         return reviewOptional
                 .map(ResponseEntity::ok)
