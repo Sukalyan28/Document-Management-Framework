@@ -6,7 +6,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
+import org.springframework.data.annotation.Id;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +17,7 @@ import java.util.List;
 @Document(collection="client")
 public class Client implements UserDetails {
 
+    @Id
     private String client_id;
     private String client_secret;
     private Date created_on;
