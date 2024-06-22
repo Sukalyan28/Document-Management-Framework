@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
@@ -25,7 +25,13 @@ public class SecurityConfig {
         http
                 .csrf(csrf ->csrf.disable())
                 .authorizeHttpRequests(auth->auth
-                        .requestMatchers("/init/**")
+                        .requestMatchers("/init/**",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/swagger-ui.html",
+                                "/swagger-ui/**",
+                                "/webjars/**",
+                                "/swagger-ui/index.html")
                         .permitAll()
                         .anyRequest().authenticated()
                 ).sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
