@@ -14,6 +14,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+
+
+import org.apache.pdfbox.pdmodel.common.PDRectangle;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.PDPage;
 import org.apache.pdfbox.pdmodel.PDPageContentStream;
@@ -130,9 +133,21 @@ public class DocumentService {
 
         //loop to add watermark to each page
         for(PDPage page : document.getPages()){
+            PDRectangle pageSize = page.getMediaBox();
+            float pageWidth = pageSize.getWidth();
+            float pageHeight = pageSize.getHeight();
+
             PDPageContentStream contentStream = new PDPageContentStream(document, page, PDPageContentStream.AppendMode.APPEND, true, true);
             contentStream.setFont(PDType1Font.HELVETICA_BOLD, 50);
-            contentStream.setNonStrokingColor(200, 200, 200);    //Light Grey colour
+            contentStream.setNonStrokingColor(200, 200, 200);
+
+            float stringWidth = PDType1Font.HELVETICA_BOLD.getStringWidth(watermark) / 1000 * 50;
+            float stringHeight = PDType1Font.HELVETICA_BOLD.getFontDescriptor().getCapHeight() / 1000 * 50;
+
+            //calculating middle coordinates
+            float centerX = (pageWidth - stringWidth) / 2;
+            float centerY = (pageHeight - stringHeight) / 3;
+            //Light Grey colour
             contentStream.beginText();
             contentStream.setTextMatrix(Matrix.getRotateInstance(Math.toRadians(45), 200, 400));  // adjust the position and angle as required
             contentStream.newLineAtOffset(100,300);
