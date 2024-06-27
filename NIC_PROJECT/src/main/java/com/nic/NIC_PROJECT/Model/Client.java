@@ -3,6 +3,7 @@ package com.nic.NIC_PROJECT.Model;
 import lombok.*;
 
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -20,8 +21,21 @@ public class Client implements UserDetails {
     @Id
     private String client_id;
     private String client_secret;
-    private Date created_on;
-    private Date expiry_on;
+//    private Date created_on;
+//    private Date expiry_on;
+
+    @Field("mobile_no")
+    private long mobileNo;
+
+    @Field("email_id")
+    private String emailId;
+
+    private String name;
+    private String gender;
+    private String dob;
+    private String address;
+
+
 
     @Setter
     @Getter
