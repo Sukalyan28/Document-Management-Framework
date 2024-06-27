@@ -37,6 +37,8 @@ public class AuthenticationService {
         var client = Client.builder()
                 .client_id(request.getClient_id())
                 .client_secret(passwordEncoder.encode(request.getClient_secret()))
+                .created_on(date)
+                .expiry_on(expiryDate)
                 .role(Role.CLIENT)
                 .build();
         clientRepository.save(client);
