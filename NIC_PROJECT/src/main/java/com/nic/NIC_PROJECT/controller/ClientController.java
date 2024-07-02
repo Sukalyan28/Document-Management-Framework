@@ -17,8 +17,8 @@ public class ClientController {
     private ClientService clientService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Client> signup(@RequestParam String client_Id, @RequestBody SignUpRequest signUpRequest) {
-        return clientService.signup(client_Id, signUpRequest)
+    public ResponseEntity<Client> signup(@RequestParam String client_id, @RequestBody SignUpRequest signUpRequest) {
+        return clientService.signup(client_id, signUpRequest)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.badRequest().build());
     }
